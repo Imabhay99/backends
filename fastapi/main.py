@@ -46,6 +46,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from inference import run_tryon_from_urls
+from utils import pose_utils
+from skimage.draw import disk, line_aa, polygon
+
+
+
 
 app = FastAPI()
 
