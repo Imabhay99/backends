@@ -18,41 +18,80 @@ See options/base_options.py and options/train_options.py for more training optio
 See training and test tips at: https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix/blob/master/docs/tips.md
 See frequently asked questions at: https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix/blob/master/docs/qa.md
 """
-import time
+# import time
+# from options.test_options import TestOptions
+# from datasets import create_dataset
+# from models import create_model
+# import os, torch, shutil
+# from tqdm import tqdm
+
+# if __name__ == '__main__':
+#     opt = TestOptions().parse()   # get training options
+#     if opt.square:
+#         opt.crop_size = (opt.crop_size, opt.crop_size)
+#     else:
+#         opt.crop_size = (opt.crop_size, max(1,int(opt.crop_size*1.0/256*176)))
+#     print("crop_size:", opt.crop_size)
+#     dataset = create_dataset(opt)  # create a dataset given opt.dataset_mode and other options
+#     dataset_size = len(dataset)    # get the number of images in the dataset.
+    
+#     print('The number of training images = %d' % dataset_size)
+
+#     model = create_model(opt)      # create a model given opt.model and other options
+    
+#     model.setup(opt)               # regular setup: load and print networks; create schedulers
+#     total_iters = 0                # the total number of training iterations
+#     model.eval()
+    
+#     generate_out_dir = os.path.join(opt.eval_output_dir + "_%s"%opt.epoch)
+#     print("generate images at %s" % generate_out_dir)
+#     os.mkdir(generate_out_dir)
+#     model.isTrain = False
+#     # generate
+#     count = 0
+#     for i, data in tqdm(enumerate(dataset), "generating for test split"):  # inner loop within one epoch
+#         with torch.no_grad():
+#             model.set_input(data)         # unpack data from dataset and apply preprocessing
+#             model.forward()
+#             count = model.save_batch(generate_out_dir, count)
+        
+    
+# At the bottom of generate_all.py
+import os
+import torch
+from tqdm import tqdm
 from options.test_options import TestOptions
 from datasets import create_dataset
 from models import create_model
-import os, torch, shutil
-from tqdm import tqdm
 
-if __name__ == '__main__':
+
+def generate_all():
     opt = TestOptions().parse()   # get training options
     if opt.square:
         opt.crop_size = (opt.crop_size, opt.crop_size)
     else:
-        opt.crop_size = (opt.crop_size, max(1,int(opt.crop_size*1.0/256*176)))
+        opt.crop_size = (opt.crop_size, max(1, int(opt.crop_size * 1.0 / 256 * 176)))
     print("crop_size:", opt.crop_size)
-    dataset = create_dataset(opt)  # create a dataset given opt.dataset_mode and other options
-    dataset_size = len(dataset)    # get the number of images in the dataset.
-    
+
+    dataset = create_dataset(opt)
+    dataset_size = len(dataset)
     print('The number of training images = %d' % dataset_size)
 
-    model = create_model(opt)      # create a model given opt.model and other options
-    
-    model.setup(opt)               # regular setup: load and print networks; create schedulers
-    total_iters = 0                # the total number of training iterations
+    model = create_model(opt)
+    model.setup(opt)
     model.eval()
-    
-    generate_out_dir = os.path.join(opt.eval_output_dir + "_%s"%opt.epoch)
+
+    generate_out_dir = os.path.join(opt.eval_output_dir + "_%s" % opt.epoch)
     print("generate images at %s" % generate_out_dir)
-    os.mkdir(generate_out_dir)
+    os.makedirs(generate_out_dir, exist_ok=True)
     model.isTrain = False
-    # generate
+
     count = 0
-    for i, data in tqdm(enumerate(dataset), "generating for test split"):  # inner loop within one epoch
+    for i, data in tqdm(enumerate(dataset), "generating for test split"):
         with torch.no_grad():
-            model.set_input(data)         # unpack data from dataset and apply preprocessing
+            model.set_input(data)
             model.forward()
             count = model.save_batch(generate_out_dir, count)
-        
-    
+if __name__ == "__main__":
+    generate_all()
+# python generate_all.py --model adgan --gpu_ids -1

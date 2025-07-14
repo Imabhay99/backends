@@ -1,8 +1,8 @@
 export NGF=32
-export DATAROOT=...
+export DATAROOT=./path/to/your/data
 export NET_G=dior
 export NAME=dior
-export PRETRAINED_FLOWNET_PATH=...
+export PRETRAINED_FLOWNET_PATH=./checkpoints/flownet.pth
 
 python train.py --model dior \
 --name $NAME --dataroot $DATAROOT \
@@ -21,14 +21,15 @@ rm -rf checkpoints/$NAME/latest_net_D*
 python train.py --model dior \
 --name $NAME --dataroot $DATAROOT \
 --batch_size 8 --lr 1e-4 --init_type orthogonal \
---loss_coe_seg 0.1 \
+--loss_coe_seg 0 \
 --netG $NET_G --ngf $NGF \
 --netD gfla --ndf 32 --n_layers_D 4 \
---n_epochs 160002 --n_epochs_decay 0 --lr_update_unit 4000 \
+--n_epochs 20002 --n_epochs_decay 0 --lr_update_unit 4000 \
 --print_freq 200 --display_freq 10000 --save_epoch_freq 10000 --save_latest_freq 2000 \
---n_cpus 8 --gpu_ids 0 --continue_train \
+--n_cpus 8 --gpu_ids 0 \
 --flownet_path $PRETRAINED_FLOWNET_PATH --frozen_flownet \
---random_rate 0.8 --perturb
+--random_rate 0 --warmup --perturb
+
 
 
 rm -rf checkpoints/$NAME/latest_net_D*
